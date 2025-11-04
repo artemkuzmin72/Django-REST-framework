@@ -27,3 +27,11 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+    
+class LessonQuantity(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
+    quantity = models.PositiveIntegerField(verbose_name='Кол-во уроков')
+
+    class Meta:
+        verbose_name = "Quantity"
+        verbose_name_plural = "Quantity"
