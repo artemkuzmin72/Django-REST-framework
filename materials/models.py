@@ -6,7 +6,7 @@ class Course(models.Model):
     title = models.CharField(max_length=200)
     preview = models.ImageField(upload_to='course_previews/')
     description = models.TextField()
-
+    
     class Meta:
         verbose_name = "Course"
         verbose_name_plural = "Courses"
@@ -27,11 +27,3 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
-    
-class LessonQuantity(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
-    quantity = models.PositiveIntegerField(verbose_name='Кол-во уроков')
-
-    class Meta:
-        verbose_name = "Quantity"
-        verbose_name_plural = "Quantity"
