@@ -1,10 +1,10 @@
 from rest_framework import generics, filters
 from django_filters.rest_framework import DjangoFilterBackend
-from user.models import Payments
-from .serializers import PaymentSerializer
+from user.models import Payment, User
+from .serializers import PaymentSerializer, UserSerializer
 
 class PaymentListView(generics.ListAPIView):
-    queryset = Payments.objects.all()
+    queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -18,3 +18,21 @@ class PaymentListView(generics.ListAPIView):
 
     ordering_fields = ['payment_date']
     ordering = ['-payment_date']  
+
+class UserCreateAPIView(generics.CreateAPIView):
+    serializer_class = UserSerializer()
+
+class UserListAPIView(generics.ListAPIView):
+    serializer_class = UserSerializer()
+    queryset = User.objects.all()
+
+class UserRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer()
+    queryset = User.objects.all()
+
+class UserUpdateAPIView(generics.UpdateAPIView):
+    serializer_class = UserSerializer()
+    queryset = User.objects.all()
+
+class UserDestroyAPIView(generics.DestroyAPIView):
+    queryset = User.objects.all()
