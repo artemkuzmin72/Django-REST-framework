@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import PaymentListView, UserListAPIView, UserCreateAPIView, UserRetrieveAPIView, UserUpdateAPIView, UserDestroyAPIView
+from .views import PaymentListView, UserListAPIView, UserCreateAPIView, UserRetrieveAPIView, UserUpdateAPIView, UserDestroyAPIView, SubscriptionAPIView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView
@@ -20,4 +20,6 @@ urlpatterns = [
     path("<int:pk>/", UserRetrieveAPIView.as_view(), name='User-get'),
     path("update/<int:pk>/", UserUpdateAPIView.as_view(), name='User-update'),
     path("delete/<int:pk>/", UserDestroyAPIView.as_view(), name='User-delete'),
+
+    path("subscriptions/", SubscriptionAPIView.as_view(), name="subscription_manage"),
 ]

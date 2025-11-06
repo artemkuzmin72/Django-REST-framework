@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from materials.models import Course
+from config.settings import AUTH_USER_MODEL
 # Create your models here.
 
 class User(AbstractUser):
@@ -63,3 +65,29 @@ class Payment(models.Model):
     def __str__(self):
         target = self.course or self.lesson
         return f"{self.user} — {target} ({self.amount}₽)"
+    
+class Subscription(models.Model):
+    """
+    Подписка пользователя на обновления курса
+    """
+    user = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+        verbose_name="Пользователь"
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+        verbose_name="Курс"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата подписки")
+
+    class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+        unique_together = ("user", "course")  
+
+    def __str__(self):
+        return f"{self.user.email} → {self.course.title}"
