@@ -2,7 +2,7 @@ from rest_framework import viewsets, generics
 from .models import Course, Lesson
 from .serializers import CourseSerializer, LessonSerializer
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsModeratorOrReadOnly, IsModeratorOrOwner, IsOwner
+from .permissions import IsModeratorOrReadOnly, IsModeratorOrOwner, IsOwner, IsModerator
 # Create your views here.
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -27,7 +27,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return Course.objects.filter(owner=user)
 
 class LessonCreateAPIView(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated & IsModerator]
     serializer_class = LessonSerializer
 
     def perform_create(self, serializer):
