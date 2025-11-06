@@ -27,7 +27,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return Course.objects.filter(owner=user)
 
 class LessonCreateAPIView(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated & IsOwner]
+    permission_classes = [IsAuthenticated]
     serializer_class = LessonSerializer
 
     def perform_create(self, serializer):
