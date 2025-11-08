@@ -2,7 +2,6 @@ from rest_framework import serializers
 from materials.models import Course, Lesson
 from .validators import LinkValidator
 from user.models import Subscription
-
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson 
@@ -21,7 +20,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_lessons_count(self, obj):
         return obj.lessons.count()
-
+    
     def get_is_subscribed(self, obj):
         """
         Проверяет, подписан ли текущий пользователь на курс.

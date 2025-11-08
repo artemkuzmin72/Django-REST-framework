@@ -13,7 +13,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     pagination_class = MyPagination
     queryset = Course.objects.all()
 
-    def get(self, request):
+    def get(self, request, queryset):
         paginated_queryset = self.paginate_queryset(queryset)
         serializer = CourseSerializer(paginated_queryset, many=True)
         return self.get_paginated_response(serializer.data)
@@ -23,6 +23,14 @@ class CourseViewSet(viewsets.ModelViewSet):
         if user.groups.filter(name='Модераторы').exists():
             return Course.objects.all()
         return Course.objects.filter(owner=user)
+    
+    def get_serializer_context(self):
+        """
+        Передаем request в сериализатор, чтобы можно было узнать текущего пользователя.
+        """
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
 
     def get_serializer_context(self):
         """

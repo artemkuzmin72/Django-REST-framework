@@ -9,7 +9,11 @@ class LinkValidator:
         value = attrs.get(self.field)
         if value:
             return attrs 
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 60d81ba030f417047f72c225d9b2a514b09cc5e5
         allowed_domains = ['youtube.com']
 
         # Если это просто ссылка, то проверим напрямую

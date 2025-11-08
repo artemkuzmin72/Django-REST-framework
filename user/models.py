@@ -97,7 +97,6 @@ class Payment(models.Model):
     def __str__(self):
         target = self.course or self.lesson
         return f"{self.user} — {target} ({self.amount}₽)"
-
 class Subscription(models.Model):
     """
     Подписка пользователя на обновления курса

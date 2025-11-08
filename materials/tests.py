@@ -7,7 +7,6 @@ from rest_framework.test import APITestCase, APIClient
 from materials.models import Course, Lesson
 from user.models import Subscription
 
-
 User = get_user_model()
 
 

@@ -8,7 +8,6 @@ from django.shortcuts import get_object_or_404
 from materials.models import Course
 from rest_framework.views import APIView
 
-
 class PaymentListView(generics.ListAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
