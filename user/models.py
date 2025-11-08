@@ -1,9 +1,41 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.conf import settings
+from materials.models import Course
+
 # Create your models here.
 
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('Email обязателен')
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        """
+        Создать суперпользователя. Устанавливаем is_staff/is_superuser.
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        # если нужны другие поля по-умолчанию, можно добавить здесь
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Суперпользователь должен иметь is_staff=True')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Суперпользователь должен иметь is_superuser=True')
+
+        return self.create_user(email, password, **extra_fields)
+
 class User(AbstractUser):
-    username = models.CharField(max_length=150, unique=True)
+    username = None
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -17,8 +49,10 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    objects = UserManager()
+
     def __str__(self):
-        return self.username
+        return self.email
     
 class Payment(models.Model):
     CASH = "cash"
@@ -63,3 +97,28 @@ class Payment(models.Model):
     def __str__(self):
         target = self.course or self.lesson
         return f"{self.user} — {target} ({self.amount}₽)"
+class Subscription(models.Model):
+    """
+    Подписка пользователя на обновления курса
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+        verbose_name="Пользователь"
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+        verbose_name="Курс"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата подписки")
+
+    class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+        unique_together = ("user", "course")  
+
+    def __str__(self):
+        return f"{self.user.email} → {self.course.title}"

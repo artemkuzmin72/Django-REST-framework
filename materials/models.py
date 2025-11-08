@@ -23,9 +23,9 @@ class Course(models.Model):
 class Lesson(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
-    preview = models.ImageField(upload_to='lesson_previews/')
-    video = models.FileField(upload_to='lesson_videos/')
-    сourse = models.ForeignKey(Course, related_name='lessons', on_delete=models.CASCADE)
+    preview = models.ImageField(upload_to='lesson_previews/', null=True, blank=True)
+    video = models.FileField(upload_to='lesson_videos/', null=True, blank=True)
+    course = models.ForeignKey(Course, related_name='lessons', on_delete=models.CASCADE)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
