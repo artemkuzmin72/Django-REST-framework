@@ -8,6 +8,7 @@ from user.models import User
 # Create your views here.
 
 class CourseViewSet(viewsets.ModelViewSet):
+    """CRUD для курсов"""
     serializer_class = CourseSerializer
     permission_classes = [IsAuthenticated & IsModeratorOrReadOnly | IsOwner]
     pagination_class = MyPagination
@@ -41,6 +42,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return context
 
 class LessonCreateAPIView(generics.CreateAPIView):
+    """Lesson Create"""
     permission_classes = [IsAuthenticated & IsModerator]
     serializer_class = LessonSerializer
     pagination_class = MyPagination
@@ -58,6 +60,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
         serializer.save(owner=self.request.user)
 
 class LessonListAPIView(generics.ListAPIView):
+    """Lesson List"""
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated & IsModeratorOrReadOnly]
     pagination_class = MyPagination
@@ -69,15 +72,19 @@ class LessonListAPIView(generics.ListAPIView):
         return self.get_paginated_response(serializer.data)
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
+    """Lesson Detail"""
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated & IsModeratorOrReadOnly | IsOwner]
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
+    """Lesson Update"""
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated & IsModeratorOrReadOnly | IsOwner]
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
+    """Lesson Deleteç"""
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated | IsOwner]
+    
