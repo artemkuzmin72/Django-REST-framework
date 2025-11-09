@@ -4,7 +4,8 @@ from .serializers import CourseSerializer, LessonSerializer
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsModeratorOrReadOnly, IsOwner, IsModerator
 from .paginators import MyPagination
-from user.models import User
+from user.models import User, Subscription
+from user.tasks import send_course_update_email
 # Create your views here.
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -24,6 +25,20 @@ class CourseViewSet(viewsets.ModelViewSet):
         if user.groups.filter(name='Модераторы').exists():
             return Course.objects.all()
         return Course.objects.filter(owner=user)
+    
+    def perform_update(self, serializer):
+        """
+        При обновлении курса отправляем уведомления подписчикам.
+        """
+        course = serializer.save()
+        
+        # Находим всех подписанных пользователей
+        subscriptions = Subscription.objects.filter(course=course)
+        emails = [sub.user.email for sub in subscriptions if sub.user.email]
+        
+        # Вызываем асинхронную задачу
+        if emails:
+            send_course_update_email.delay(course.title, emails)
     
     def get_serializer_context(self):
         """
