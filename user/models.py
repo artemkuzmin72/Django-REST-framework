@@ -1,14 +1,16 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db import models
+
 from materials.models import Course
 
 # Create your models here.
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
-            raise ValueError('Email обязателен')
+            raise ValueError("Email обязателен")
 
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
@@ -23,16 +25,17 @@ class UserManager(BaseUserManager):
         """
         Создать суперпользователя. Устанавливаем is_staff/is_superuser.
         """
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
         # если нужны другие поля по-умолчанию, можно добавить здесь
 
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Суперпользователь должен иметь is_staff=True')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Суперпользователь должен иметь is_superuser=True')
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Суперпользователь должен иметь is_staff=True")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Суперпользователь должен иметь is_superuser=True")
 
         return self.create_user(email, password, **extra_fields)
+
 
 class User(AbstractUser):
     username = None
@@ -40,20 +43,21 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     city = models.CharField(max_length=50)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
 
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = UserManager()
 
     def __str__(self):
         return self.email
-    
+
+
 class Payment(models.Model):
     CASH = "cash"
     TRANSFER = "transfer"
@@ -75,60 +79,47 @@ class Payment(models.Model):
         (STATUS_FAILED, "Ошибка оплаты"),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
-    payment_date = models.DateTimeField(verbose_name="Дата оплаты", null=True, blank=True)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name="Пользователь"
+    )
+    payment_date = models.DateTimeField(
+        verbose_name="Дата оплаты", null=True, blank=True
+    )
     course = models.ForeignKey(
-        'materials.Course',
+        "materials.Course",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Курс"
+        verbose_name="Курс",
     )
     lesson = models.ForeignKey(
-        'materials.Lesson',
+        "materials.Lesson",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Урок"
+        verbose_name="Урок",
     )
-    amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Сумма"
-    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Сумма")
     payment_method = models.CharField(
-        max_length=10,
-        choices=METHOD_CHOICES,
-        verbose_name="Метод оплаты"
+        max_length=10, choices=METHOD_CHOICES, verbose_name="Метод оплаты"
     )
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
         default=STATUS_PENDING,
-        verbose_name="Статус оплаты"
+        verbose_name="Статус оплаты",
     )
     stripe_product_id = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        verbose_name="ID продукта в Stripe"
+        max_length=255, null=True, blank=True, verbose_name="ID продукта в Stripe"
     )
     stripe_price_id = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        verbose_name="ID цены в Stripe"
+        max_length=255, null=True, blank=True, verbose_name="ID цены в Stripe"
     )
     stripe_session_id = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        verbose_name="ID сессии в Stripe"
+        max_length=255, null=True, blank=True, verbose_name="ID сессии в Stripe"
     )
     payment_url = models.URLField(
-        null=True,
-        blank=True,
-        verbose_name="Ссылка на оплату"
+        null=True, blank=True, verbose_name="Ссылка на оплату"
     )
 
     class Meta:
@@ -138,28 +129,31 @@ class Payment(models.Model):
     def __str__(self):
         target = self.course or self.lesson
         return f"{self.user} — {target} ({self.amount}₽)"
+
+
 class Subscription(models.Model):
     """
     Подписка пользователя на обновления курса
     """
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="subscriptions",
-        verbose_name="Пользователь"
+        verbose_name="Пользователь",
     )
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
         related_name="subscriptions",
-        verbose_name="Курс"
+        verbose_name="Курс",
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата подписки")
 
     class Meta:
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
-        unique_together = ("user", "course")  
+        unique_together = ("user", "course")
 
     def __str__(self):
         return f"{self.user.email} → {self.course.title}"

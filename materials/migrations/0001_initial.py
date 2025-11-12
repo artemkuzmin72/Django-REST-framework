@@ -8,36 +8,58 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Course',
+            name="Course",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200)),
-                ('preview', models.ImageField(upload_to='course_previews/')),
-                ('description', models.TextField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                ("preview", models.ImageField(upload_to="course_previews/")),
+                ("description", models.TextField()),
             ],
             options={
-                'verbose_name': 'Course',
-                'verbose_name_plural': 'Courses',
+                "verbose_name": "Course",
+                "verbose_name_plural": "Courses",
             },
         ),
         migrations.CreateModel(
-            name='Lesson',
+            name="Lesson",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200)),
-                ('description', models.TextField()),
-                ('preview', models.ImageField(upload_to='lesson_previews/')),
-                ('video', models.FileField(upload_to='lesson_videos/')),
-                ('сourse', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lessons', to='materials.course')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                ("description", models.TextField()),
+                ("preview", models.ImageField(upload_to="lesson_previews/")),
+                ("video", models.FileField(upload_to="lesson_videos/")),
+                (
+                    "сourse",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="lessons",
+                        to="materials.course",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Lesson',
-                'verbose_name_plural': 'Lessons',
+                "verbose_name": "Lesson",
+                "verbose_name_plural": "Lessons",
             },
         ),
     ]

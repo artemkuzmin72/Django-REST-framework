@@ -8,31 +8,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('materials', '0002_rename_сourse_lesson_course'),
+        ("materials", "0002_rename_сourse_lesson_course"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='owner',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='courses', to=settings.AUTH_USER_MODEL),
+            model_name="course",
+            name="owner",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="courses",
+                to=settings.AUTH_USER_MODEL,
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='lesson',
-            name='owner',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='lessons', to=settings.AUTH_USER_MODEL),
+            model_name="lesson",
+            name="owner",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="lessons",
+                to=settings.AUTH_USER_MODEL,
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='lesson',
-            name='preview',
-            field=models.ImageField(blank=True, null=True, upload_to='lesson_previews/'),
+            model_name="lesson",
+            name="preview",
+            field=models.ImageField(
+                blank=True, null=True, upload_to="lesson_previews/"
+            ),
         ),
         migrations.AlterField(
-            model_name='lesson',
-            name='video',
-            field=models.FileField(blank=True, null=True, upload_to='lesson_videos/'),
+            model_name="lesson",
+            name="video",
+            field=models.FileField(blank=True, null=True, upload_to="lesson_videos/"),
         ),
     ]

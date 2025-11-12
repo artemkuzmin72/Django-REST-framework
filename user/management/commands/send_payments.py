@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from user.models import User, Payment
+
 from materials.models import Course, Lesson
+from user.models import Payment, User
 
 
 class Command(BaseCommand):
@@ -21,7 +22,7 @@ class Command(BaseCommand):
             payment_date=timezone.now(),
             course=course,
             amount=1500.00,
-            payment_method="cash"
+            payment_method="cash",
         )
 
         Payment.objects.create(
@@ -29,7 +30,7 @@ class Command(BaseCommand):
             payment_date=timezone.now(),
             lesson=lesson,
             amount=700.00,
-            payment_method="transfer"
+            payment_method="transfer",
         )
 
         self.stdout.write(self.style.SUCCESS("Данные о платежах успешно добавлены!"))
