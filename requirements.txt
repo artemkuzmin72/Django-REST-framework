@@ -3,6 +3,7 @@ appnope==0.1.4
 asgiref==3.10.0
 asttokens==3.0.0
 billiard==4.2.2
+black==25.11.0
 blinker==1.9.0
 celery==5.5.3
 certifi==2025.10.5
@@ -20,6 +21,7 @@ cron_descriptor==2.0.6
 cycler==0.12.1
 debugpy==1.8.17
 decorator==5.2.1
+dj-database-url==3.0.1
 Django==5.2.7
 django-celery-beat==2.8.1
 django-cors-headers==4.9.0
@@ -30,6 +32,7 @@ djangorestframework_simplejwt==5.5.1
 dotenv==0.9.9
 drf-yasg==1.21.11
 executing==2.2.1
+flake8==7.3.0
 Flask==3.1.2
 fonttools==4.60.1
 idna==3.11
@@ -37,6 +40,7 @@ inflection==0.5.1
 ipykernel==7.1.0
 ipython==9.7.0
 ipython_pygments_lexers==1.1.1
+isort==7.0.0
 itsdangerous==2.2.0
 itypes==1.2.0
 jedi==0.19.2
@@ -49,12 +53,15 @@ kombu==5.5.4
 MarkupSafe==3.0.3
 matplotlib==3.10.7
 matplotlib-inline==0.2.1
+mccabe==0.7.0
 msgpack==1.0.2
+mypy_extensions==1.1.0
 nest-asyncio==1.6.0
 numpy==2.3.4
 packaging==25.0
 pandas==2.3.3
 parso==0.8.5
+pathspec==0.12.1
 pexpect==4.9.0
 pillow==12.0.0
 platformdirs==4.5.0
@@ -64,12 +71,15 @@ psycopg2==2.9.11
 psycopg2-binary==2.9.11
 ptyprocess==0.7.0
 pure_eval==0.2.3
+pycodestyle==2.14.0
+pyflakes==3.4.0
 Pygments==2.19.2
 PyJWT==2.10.1
 pyparsing==3.2.5
 python-crontab==3.3.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
+pytokens==0.3.0
 pytz==2025.2
 PyYAML==6.0.3
 pyzmq==27.1.0
