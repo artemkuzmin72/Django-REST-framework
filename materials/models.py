@@ -25,7 +25,9 @@ class Lesson(models.Model):
     description = models.TextField()
     preview = models.ImageField(upload_to="lesson_previews/", null=True, blank=True)
     video = models.FileField(upload_to="lesson_videos/", null=True, blank=True)
-    course = models.ForeignKey(Course, related_name="lessons", on_delete=models.CASCADE)
+    course = models.ForeignKey(
+        Course, related_name="lessons", on_delete=models.CASCADE, null=True, blank=True
+    )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="lessons"
     )

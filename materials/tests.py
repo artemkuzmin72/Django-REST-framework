@@ -76,9 +76,7 @@ class LessonAndSubscriptionTestCase(APITestCase):
         """Authenticated user can create a lesson via the create endpoint."""
         self.client.force_authenticate(user=self.user)
 
-        # NOTE: in the model the FK field name is spelled with a Cyrillic 'с' ("сourse").
-        # Use the exact field name so serializer accepts it.
-        course_field_name = "\u0441ourse"
+        course_field_name = "course"
 
         data = {
             "title": "Урок 2",
