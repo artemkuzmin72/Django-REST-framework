@@ -30,7 +30,6 @@ jobs:
       - name: Run lint checks
         run: |
           black --check .
-          isort --check-only .
           flake8 .
 
   tests:

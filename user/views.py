@@ -9,8 +9,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from materials.models import Course
-from materials.service import (create_stripe_price, create_stripe_product,
-                               create_stripe_session, retrieve_stripe_session)
+from materials.service import (
+    create_stripe_price,
+    create_stripe_product,
+    create_stripe_session,
+    retrieve_stripe_session,
+)
 
 from .models import Payment, Subscription, User
 from .serializers import PaymentSerializer, UserSerializer
