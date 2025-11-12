@@ -1,7 +1,9 @@
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
+
 from user.models import Subscription
 from user.tasks import send_course_update_email
+
 from .models import Course, Lesson
 from .paginators import MyPagination
 from .permissions import IsModerator, IsModeratorOrReadOnly, IsOwner
