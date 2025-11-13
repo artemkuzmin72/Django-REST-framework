@@ -1,66 +1,83 @@
-from rest_framework import generics, filters
+from decimal import Decimal
+
+import stripe
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Payment, User, Subscription
-from .serializers import PaymentSerializer, UserSerializer
+from rest_framework import filters, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from materials.models import Course
 from rest_framework.views import APIView
+
+from materials.models import Course
 from materials.service import (
-    create_stripe_product,
     create_stripe_price,
+    create_stripe_product,
     create_stripe_session,
     retrieve_stripe_session,
 )
-from decimal import Decimal
-import stripe
+
+from .models import Payment, Subscription, User
+from .serializers import PaymentSerializer, UserSerializer
+
 
 class PaymentListView(generics.ListAPIView):
     """List of Payments with filtering and ordering"""
+
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
 
     filterset_fields = {
-        'course': ['exact'],
-        'lesson': ['exact'],
-        'payment_method': ['exact'],
-        'payment_date': ['exact', 'gte', 'lte'], 
+        "course": ["exact"],
+        "lesson": ["exact"],
+        "payment_method": ["exact"],
+        "payment_date": ["exact", "gte", "lte"],
     }
 
-    ordering_fields = ['payment_date']
-    ordering = ['-payment_date']  
+    ordering_fields = ["payment_date"]
+    ordering = ["-payment_date"]
+
 
 class UserCreateAPIView(generics.CreateAPIView):
     """User Create"""
+
     serializer_class = UserSerializer
+
 
 class UserListAPIView(generics.ListAPIView):
     """User List"""
+
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
 
 class UserRetrieveAPIView(generics.RetrieveAPIView):
     """User Detail"""
+
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
 
 class UserUpdateAPIView(generics.UpdateAPIView):
     """User Update"""
+
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
+
 class UserDestroyAPIView(generics.DestroyAPIView):
     """User Delete"""
+
     queryset = User.objects.all()
+
 
 class SubscriptionAPIView(APIView):
     """
     - Если пользователь уже подписан на курс удаляет подписку.
     - Если нет создает новую.
     """
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -89,6 +106,7 @@ class PaymentCreateAPIView(APIView):
     Создание платежа через Stripe.
     Принимает course_id и создает продукт, цену и сессию в Stripe.
     """
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -163,6 +181,7 @@ class PaymentStatusAPIView(APIView):
     """
     Проверка статуса платежа через Stripe.
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, payment_id, *args, **kwargs):
@@ -176,12 +195,15 @@ class PaymentStatusAPIView(APIView):
         session_data = retrieve_stripe_session(payment.stripe_session_id)
 
         if not session_data:
-            return Response({"error": "Не удалось получить статус платежа."}, status=400)
+            return Response(
+                {"error": "Не удалось получить статус платежа."}, status=400
+            )
 
         # Обновляем статус платежа
         if session_data["payment_status"] == "paid":
             payment.status = Payment.STATUS_PAID
             from django.utils import timezone
+
             payment.payment_date = timezone.now()
         elif session_data["payment_status"] == "unpaid":
             payment.status = Payment.STATUS_PENDING

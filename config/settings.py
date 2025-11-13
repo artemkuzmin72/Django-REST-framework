@@ -1,7 +1,9 @@
-from pathlib import Path
-from dotenv import load_dotenv
 import os
+from pathlib import Path
+
 from celery.schedules import crontab
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,12 +27,11 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "django_filters",
-    'django_celery_beat',
+    "django_celery_beat",
     "user",
     "materials",
-    'drf_yasg',
-    'corsheaders',
-    
+    "drf_yasg",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -41,7 +42,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -69,14 +70,14 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 load_dotenv()
 DATABASES = {
-'default': {
-'ENGINE': 'django.db.backends.postgresql_psycopg2',
-'NAME': os.getenv('DATABASE_NAME'),
-'USER': os.getenv('DATABASE_USER'),
-'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-'HOST': os.getenv('DATABASE_HOST'),
-'PORT': os.getenv('DATABASE_PORT', default='5432'),
-}
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.getenv("DATABASE_NAME", "postgres"),
+        "USER": os.getenv("DATABASE_USER", "postgres"),
+        "PASSWORD": os.getenv("DATABASE_PASSWORD", "postgres"),
+        "HOST": os.getenv("DATABASE_HOST", "localhost"),
+        "PORT": os.getenv("DATABASE_PORT", "5432"),
+    }
 }
 
 
@@ -115,6 +116,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -124,17 +126,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "user.User"
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 }
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8000', 
+    "http://localhost:8000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://read-and-write.example.com", 
+    "https://read-and-write.example.com",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
@@ -142,31 +144,31 @@ CORS_ALLOW_ALL_ORIGINS = False
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = 'redis://localhost:6379' 
+CELERY_BROKER_URL = "redis://localhost:6379"
 
-# URL-адрес брокера результатов, также Redis  
-CELERY_RESULT_BACKEND = 'redis://localhost:6379' 
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
 # Флаг отслеживания выполнения задач
-CELERY_TASK_TRACK_STARTED = True 
+CELERY_TASK_TRACK_STARTED = True
 
 # Максимальное время на выполнение задачи
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
-CELERY_TIMEZONE = 'Europe/Moscow'
+CELERY_TIMEZONE = "Europe/Moscow"
 CELERY_ENABLE_UTC = False
 
 CELERY_BEAT_SCHEDULE = {
-    'deactivate-inactive-users-every-midnight': {
-        'task': 'user.tasks.deactivate_inactive_users',
-        'schedule':  crontab(hour=0, minute=0),
+    "deactivate-inactive-users-every-midnight": {
+        "task": "user.tasks.deactivate_inactive_users",
+        "schedule": crontab(hour=0, minute=0),
     },
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

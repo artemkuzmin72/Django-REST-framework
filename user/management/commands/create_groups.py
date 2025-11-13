@@ -1,6 +1,7 @@
-from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core.management.base import BaseCommand
+
 from materials.models import Course, Lesson
 
 
@@ -8,7 +9,7 @@ class Command(BaseCommand):
     help = "Создает группу 'Модераторы' с ограниченными правами"
 
     def handle(self, *args, **options):
-        moderator_group, created = Group.objects.get_or_create(name='Модераторы')
+        moderator_group, created = Group.objects.get_or_create(name="Модераторы")
 
         course_ct = ContentType.objects.get_for_model(Course)
         lesson_ct = ContentType.objects.get_for_model(Lesson)
@@ -16,12 +17,16 @@ class Command(BaseCommand):
         allowed_permissions = Permission.objects.filter(
             content_type__in=[course_ct, lesson_ct],
             codename__in=[
-                'view_course', 'change_course',
-                'view_lesson', 'change_lesson'
-            ]
+                "view_course",
+                "change_course",
+                "view_lesson",
+                "change_lesson",
+            ],
         )
 
         moderator_group.permissions.set(allowed_permissions)
         moderator_group.save()
 
-        self.stdout.write(self.style.SUCCESS('Группа "Модераторы" успешно создана с нужными правами!'))
+        self.stdout.write(
+            self.style.SUCCESS('Группа "Модераторы" успешно создана с нужными правами!')
+        )

@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
-from materials.models import Course, Lesson
+from rest_framework.test import APIClient, APITestCase
+
+from materials.models import Course
 from user.models import Subscription
 
 User = get_user_model()
@@ -23,16 +23,24 @@ class LessonAndSubscriptionTestCase(APITestCase):
 
     def setUp(self):
         # Users
-        self.user = User.objects.create_user(email='user@example.com', password='userpass')
-        self.moderator = User.objects.create_user(email='moderator@example.com', password='modpass')
-        self.admin = User.objects.create_superuser(email='admin@example.com', password='adminpass')
+        self.user = User.objects.create_user(
+            email="user@example.com", password="userpass"
+        )
+        self.moderator = User.objects.create_user(
+            email="moderator@example.com", password="modpass"
+        )
+        self.admin = User.objects.create_superuser(
+            email="admin@example.com", password="adminpass"
+        )
 
         # create moderators group and add moderator user
-        moderators_group, _ = Group.objects.get_or_create(name='Модераторы')
+        moderators_group, _ = Group.objects.get_or_create(name="Модераторы")
         self.moderator.groups.add(moderators_group)
 
         # Course and lesson
-        self.course = Course.objects.create(title="Python Base", description="Основы Python", owner=self.admin)
+        self.course = Course.objects.create(
+            title="Python Base", description="Основы Python", owner=self.admin
+        )
         self.lesson = self.course.lessons.create(
             title="Урок 1",
             description="Введение в Python https://youtube.com/watch?v=test",
@@ -42,12 +50,16 @@ class LessonAndSubscriptionTestCase(APITestCase):
         self.client = APIClient()
 
         # URLs
-        self.lesson_list_url = reverse('materials:lesson-list')
-        self.lesson_create_url = reverse('materials:lesson-create')
-        self.lesson_update_url = reverse('materials:lesson-update', args=[self.lesson.id])
-        self.lesson_delete_url = reverse('materials:lesson-delete', args=[self.lesson.id])
+        self.lesson_list_url = reverse("materials:lesson-list")
+        self.lesson_create_url = reverse("materials:lesson-create")
+        self.lesson_update_url = reverse(
+            "materials:lesson-update", args=[self.lesson.id]
+        )
+        self.lesson_delete_url = reverse(
+            "materials:lesson-delete", args=[self.lesson.id]
+        )
         # subscription view lives in user app
-        self.subscription_url = reverse('user:subscription-manage')
+        self.subscription_url = reverse("user:subscription-manage")
 
     def test_lesson_list_requires_authentication(self):
         """Unauthenticated users should not be able to list lessons."""
@@ -64,9 +76,7 @@ class LessonAndSubscriptionTestCase(APITestCase):
         """Authenticated user can create a lesson via the create endpoint."""
         self.client.force_authenticate(user=self.user)
 
-        # NOTE: in the model the FK field name is spelled with a Cyrillic 'с' ("сourse").
-        # Use the exact field name so serializer accepts it.
-        course_field_name = "\u0441ourse"
+        course_field_name = "course"
 
         data = {
             "title": "Урок 2",
@@ -75,14 +85,21 @@ class LessonAndSubscriptionTestCase(APITestCase):
             # serializer may require owner in input; provide current user id
             "owner": self.user.id,
         }
-        response = self.client.post(self.lesson_create_url, data=data, format='multipart')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, msg=response.data)
+        response = self.client.post(
+            self.lesson_create_url, data=data, format="multipart"
+        )
+        self.assertEqual(
+            response.status_code, status.HTTP_201_CREATED, msg=response.data
+        )
         self.assertEqual(response.data.get("title"), "Урок 2")
 
     def test_lesson_update_owner(self):
         """Owner of the lesson can update it."""
         self.client.force_authenticate(user=self.admin)
-        data = {"title": "Обновлённый урок", "description": "https://youtube.com/watch?v=abc"}
+        data = {
+            "title": "Обновлённый урок",
+            "description": "https://youtube.com/watch?v=abc",
+        }
         response = self.client.patch(self.lesson_update_url, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get("title"), "Обновлённый урок")
@@ -92,7 +109,15 @@ class LessonAndSubscriptionTestCase(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.delete(self.lesson_delete_url)
         # Depending on permissions configuration the app may return 204 (deleted) or forbid the action.
-        self.assertIn(response.status_code, [status.HTTP_204_NO_CONTENT, status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED, status.HTTP_405_METHOD_NOT_ALLOWED])
+        self.assertIn(
+            response.status_code,
+            [
+                status.HTTP_204_NO_CONTENT,
+                status.HTTP_403_FORBIDDEN,
+                status.HTTP_401_UNAUTHORIZED,
+                status.HTTP_405_METHOD_NOT_ALLOWED,
+            ],
+        )
 
     # ----------------------- SUBSCRIPTION TESTS ---------------------------
 
@@ -104,29 +129,37 @@ class LessonAndSubscriptionTestCase(APITestCase):
         # create
         response = self.client.post(self.subscription_url, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data.get("message"), ["Подписка добавлена", "подписка добавлена"])
-        self.assertTrue(Subscription.objects.filter(user=self.user, course=self.course).exists())
+        self.assertIn(
+            response.data.get("message"), ["Подписка добавлена", "подписка добавлена"]
+        )
+        self.assertTrue(
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
+        )
 
         # remove
         response = self.client.post(self.subscription_url, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data.get("message"), ["Подписка удалена", "подписка удалена"])
-        self.assertFalse(Subscription.objects.filter(user=self.user, course=self.course).exists())
+        self.assertIn(
+            response.data.get("message"), ["Подписка удалена", "подписка удалена"]
+        )
+        self.assertFalse(
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
+        )
 
     def test_subscription_field_in_course_detail(self):
         """Course detail contains is_subscribed flag for authenticated user."""
         self.client.force_authenticate(user=self.user)
         Subscription.objects.create(user=self.user, course=self.course)
 
-        url = reverse('materials:course-detail', args=[self.course.id])
+        url = reverse("materials:course-detail", args=[self.course.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data.get('is_subscribed'))
+        self.assertTrue(response.data.get("is_subscribed"))
 
     def test_subscription_field_for_unsubscribed_user(self):
         """If user is not subscribed, is_subscribed should be False."""
         self.client.force_authenticate(user=self.user)
-        url = reverse('materials:course-detail', args=[self.course.id])
+        url = reverse("materials:course-detail", args=[self.course.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertFalse(response.data.get('is_subscribed'))
+        self.assertFalse(response.data.get("is_subscribed"))
